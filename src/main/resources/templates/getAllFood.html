@@ -1,0 +1,143 @@
+<html lang="ch">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    th, td {
+        padding: 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+    tr:hover {
+        background-color: #f5f5f5;
+    }
+    button {
+        background-color: #4CAF50;
+        color: white;
+        padding: 10px 20px;
+        margin: 5px 0;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+    }
+    button.delete {
+        background-color: #f44336;
+    }
+    button.edit, button.save {
+        display: none;
+    }
+    form {
+        margin-top: 20px;
+    }
+    input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        margin: 5px 0;
+        box-sizing: border-box;
+    }
+</style>
+<script th:inline:svg="javascript">
+    function deleteFood(id){
+        if (confirm("确定删除吗？")){
+            window.location.href='/manage/deleteFood?id='+id;
+        }
+    }
+    function editFood(row){
+        const cells = row.getElementsByTagName('td');
+        for (let i = 0; i < cells.length-1; i++) {
+            const cell = cells[i];
+            const text = cell.innerText.trim();
+            cell.innerHTML = '<input type="text" value="' + text + '">';
+        }
+        const saveButton = row.querySelector('.save-btn');
+        saveButton.style.display = 'inline';
+        const editButton = row.querySelector('.edit-btn');
+        editButton.style.display = 'none';
+    }
+
+
+    function saveFood(row, id){
+        const cells = row.getElementsByTagName('td');
+        const foodData = {
+            name: cells[0].childNodes[0].value.trim(),
+            protein: cells[1].childNodes[0].value.trim(),
+            carbohydrates: cells[2].childNodes[0].value.trim(),
+            fat: cells[3].childNodes[0].value.trim(),
+            heat: cells[4].childNodes[0].value.trim(),
+            id: id
+        };
+        console.log(foodData)
+        fetch('/manage/updateFood', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(foodData)
+        })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Data saved successfully');
+                    location.reload();
+                } else {
+                    console.error('Failed to save data');
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+</script>
+<body>
+
+<table>
+    <tr>
+        <td>名称</td>
+        <td>蛋白质含量(g)</td>
+        <td>碳水化合物(g)</td>
+        <td>脂肪含量(g)</td>
+        <td>热量(大卡)</td>
+        <td>操作</td>
+    </tr>
+    <tr th:each="food : ${foodList}">
+        <td th:text="${food.getName()}"></td>
+        <td th:text="${food.getProtein()}"></td>
+        <td th:text="${food.getCarbohydrates()}"></td>
+        <td th:text="${food.getFat()}"></td>
+        <td th:text="${food.getHeat()}"></td>
+        <td>
+            <button class="edit-btn" onclick="editFood(this.parentElement.parentElement)">修改</button>
+            <button th:attr="data-id=${food.getId()}" class="save-btn" style="display: none;" onclick="saveFood(this.parentElement.parentElement,this.getAttribute('data-id'))">保存</button>
+            <button th:attr="data-id=${food.getId()}" onclick="deleteFood(this.getAttribute('data-id'))">删除</button>
+        </td>
+    </tr>
+</table>
+<button onclick="showForm()">新建</button>
+<form id="foodForm" style="display: none;" method="post" th:action="@{/manage/addFood}">
+    <label>名称：</label><input type="text" name="name" required>
+    <label>蛋白质含量(g)：</label><input type="text" name="protein" required>
+    <label>碳水化合物(g)：</label><input type="text" name="carbohydrates" required>
+    <label>脂肪含量(g)：</label><input type="text" name="fat" required>
+    <label>热量(大卡)：</label><input type="text" name="heat" required>
+    <button type="submit">提交</button>
+</form>
+<script>
+    function showForm() {
+        document.getElementById('foodForm').style.display = 'block';
+    }
+</script>
+</body>
+</html>

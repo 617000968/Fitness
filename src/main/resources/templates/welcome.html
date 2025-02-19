@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ch">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            color: #333;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #007bff;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .info {
+            margin-bottom: 20px;
+        }
+        .button-group {
+            text-align: center;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table th, table td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Welcome [[${information.getName()}]]!</h1>
+    <div class="button-group">
+        <button onclick="window.location.href='/recording'">Record</button>
+        <button onclick="window.location.href='/update'">Update Info</button>
+        <button onclick="window.location.href='/logout'">Logout</button>
+    </div>
+    <div class="bmi-draw">
+        <canvas id="myChart" width="20" height="0"></canvas>
+    </div>
+    <div class="sportList">
+        <p>想要<a th:text="${information.getTarget()}"></a>的话，可以做下面这些运动：</p>
+        <table>
+            <tr th:each="sportList : ${sportList}">
+                <td th:text="${sportList.getName()}"></td>
+            </tr>
+        </table>
+    </div>
+    <div class="foodList">
+        <p>食物清单(每100g为基准)</p>
+        <table>
+            <tr>
+                <th>名称</th>
+                <th>蛋白质含量(g)</th>
+                <th>碳水化合物(g)</th>
+                <th>脂肪含量(g)</th>
+                <th>热量(大卡)</th>
+            </tr>
+            <tr th:each="food : ${foodList}">
+                <td th:text="${food.getName()}"></td>
+                <td th:text="${food.getProtein()}"></td>
+                <td th:text="${food.getCarbohydrates()}"></td>
+                <td th:text="${food.getFat()}"></td>
+                <td th:text="${food.getHeat()}"></td>
+            </tr>
+        </table>
+    </div>
+</div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:inline="javascript">
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const recordingList = [[${recordList}]];
+        const bmiData = recordingList.map(record => record.bmi);
+        const dateLabels = recordingList.map(record => record.recordingTime)
+        const heightData = recordingList.map(record => record.height)
+        const weightData = recordingList.map(record => record.weight)
+        const data = {
+            labels: dateLabels,
+            datasets: [{
+                label: 'BMI',
+                data: bmiData,
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            }]
+        };
+        const options = {
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ":";
+                            }
+                            if (context.parsed.y != null) {
+                                label +=  context.parsed.y + '  身高:' + heightData[context.dataIndex] + 'cm 体重:' + weightData[context.dataIndex] + "kg";
+                            }
+                            return label;
+                        }
+                    }
+                }
+            }
+        }
+        const myChart = new Chart(ctx, {
+            type: 'line',
+            data: data,
+            options : options
+        });
+    </script>
+</body>
+</html>

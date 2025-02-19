@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>用户管理</title>
+    <style>
+        /* 基本样式 */
+        body {
+            font-family: Arial, sans-serif;
+            margin: auto;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* 表单样式 */
+        form {
+            width: 300px;
+            margin-bottom: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        form input[type="text"],
+        form input[type="password"],
+        form input[type="submit"] {
+            width: 100%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        form input[type="submit"] {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        form input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        /* 隐藏字段样式（如果需要的话） */
+        form input[type="hidden"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<form th:action="@{/update}" method="post">
+        <input type="hidden" th:value="${information.getUsername()}" name="username">
+        <label>
+            请输入新密码：
+            <input type="text" name="password">
+        </label>
+        <input type="submit" value="提交">
+    </form>
+    <form th:action="@{/delete}" method="post">
+        <input type="hidden" th:value="${user.getId()}" name="id">
+        <input type="submit" value="注销用户">
+    </form>
+</body>
+</html>

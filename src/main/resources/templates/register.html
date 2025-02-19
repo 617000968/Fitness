@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="ch">
+<head>
+    <meta charset="UTF-8">
+    <title>Register</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" integrity="sha512-SzlrxWUlpfuzQ+pcUCosxcglQRNAq/DZjVsC0lE40xsADsfeQoEypE+enwcOiGjk/bSuGGKHEyjSoQ1zVisanQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="../static/js/jQuery.js" type="text/javascript"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f7f7f7;
+        }
+
+        form {
+            width: 100%;
+            max-width: 400px;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: #007bff;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        .error {
+            display: none;
+            color: crimson;
+            font-size: 0.8em;
+            margin-top: 2px;
+        }
+
+        .slideIn {
+            animation: slideIn 0.5s forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(20%);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+<form id="user">
+    <h2 class="mb-3">Register</h2>
+    <label for="username1">Username:</label>
+    <input type="text" name="username1" id="username1" pattern="^[a-zA-Z0-9]*$" required />
+    <span class="error" id="usernameError">Username can only contain letters and numbers!</span>
+    <span class="error" id="usernameError2">Username cannot be empty!</span>
+    <br />
+    <label for="password1">Password:</label>
+    <input type="password" name="password1" id="password1" pattern="^[a-zA-Z0-9]*$" required />
+    <span class="error" id="passwordError">Password can only contain letters and numbers!</span>
+    <span class="error" id="passwordError2">Password cannot be empty!</span>
+    <br />
+    <button type="button" onclick="slideToForm2()">Next &raquo;</button>
+</form>
+
+
+
+<form id="information" style="display: none;" method="post" th:action="@{/register}">
+    <input type="hidden" name="username" id="username" required>
+    <input type="hidden" name="password" id="password" required>
+    <label>
+        姓名：<input type="text" name="name" th:pattern="'^[\u4e00-\u9fa5]+$'" required>
+    </label>
+    <label>
+        性别：
+        <select name="sex">
+            <option value="男">男</option>
+            <option value="女">女</option>
+        </select>
+    </label>
+    <label>
+        身高：<input type="text" name="height" th:pattern="'^[0-9]*(.[0-9]+)?$'" required>(cm)
+    </label>
+    <label>
+        体重：<input type="text" name="weight" th:pattern="'^[0-9]*(.[0-9]+)?$'" required>(kg)
+    </label>
+    <label>
+        年龄：<input type="number" name="age" th:pattern="'^[0-9]*$'" required>(周岁)
+    </label>
+    <label>
+        目标：
+        <select name="target">
+            <option value="增肌">增肌</option>
+            <option value="减肥">减肥</option>
+            <option value="健康">健康</option>
+        </select>
+    </label>
+    <button type="submit" style="float: right">Submit</button>
+</form>
+<div>
+    <script th:if="${message}" th:text="'var message = ' + message + '; alert(message);'"></script>
+</div>
+<script>
+    function slideToForm2() {
+        let x = document.getElementById("username1");
+        let y = document.getElementById("password1");
+        if (!x.checkValidity()){
+            document.getElementById('usernameError2').style.display = 'block';
+            return false;
+        }
+        if (!y.checkValidity()){
+            document.getElementById('passwordError2').style.display = 'block';
+            return false;
+        }
+
+            document.getElementById('username').value = document.getElementById('username1').value;
+            document.getElementById('password').value = document.getElementById('password1').value;
+            document.getElementById('user').style.display = 'none';
+            document.getElementById('information').style.display = 'block';
+            document.getElementById('information').classList.add('slideIn');
+    }
+</script>
+
+</body>
+</html>
